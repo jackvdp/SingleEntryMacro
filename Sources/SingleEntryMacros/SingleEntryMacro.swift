@@ -62,6 +62,6 @@ public struct SingleEntryMacros: AccessorMacro, PeerMacro {
 @main
 struct SingleEntryMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        SingleEntry.self,
+        SingleEntryMacros.self,
     ]
 }

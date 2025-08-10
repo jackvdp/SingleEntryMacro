@@ -3,7 +3,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct SingleEntryMacros: AccessorMacro, PeerMacro {
+public struct SingleEntryMacro: AccessorMacro, PeerMacro {
     
     // This replaces the variable's accessors (removes the initializer, adds get/set)
     public static func expansion(
@@ -62,6 +62,6 @@ public struct SingleEntryMacros: AccessorMacro, PeerMacro {
 @main
 struct SingleEntryMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        SingleEntryMacros.self,
+        SingleEntryMacro.self,
     ]
 }

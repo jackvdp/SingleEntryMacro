@@ -13,10 +13,6 @@ let package = Package(
             name: "SingleEntry",
             targets: ["SingleEntry"]
         ),
-        .executable(
-            name: "SingleEntryClient",
-            targets: ["SingleEntryClient"]
-        ),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
@@ -35,9 +31,6 @@ let package = Package(
 
         // Library that exposes a macro as part of its API, which is used in client programs.
         .target(name: "SingleEntry", dependencies: ["SingleEntryMacros"]),
-
-        // A client of the library, which is able to use the macro in its own code.
-        .executableTarget(name: "SingleEntryClient", dependencies: ["SingleEntry"]),
 
         // A test target used to develop the macro implementation.
         .testTarget(

@@ -1,4 +1,3 @@
-// Sources/SingleEntryMacroMacros/SingleEntryMacro.swift
 import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder

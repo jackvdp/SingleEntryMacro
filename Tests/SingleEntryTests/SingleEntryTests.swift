@@ -1,4 +1,3 @@
-// Tests/SingleEntryMacroTests/SingleEntryMacroTests.swift
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest

@@ -24,11 +24,11 @@ final class SingleEntryMacroTests: XCTestCase {
                 }
 
                 struct FooKey: EnvironmentKey {
-                    static var defaultValue: Foo = Foo()
+                    static let defaultValue: Foo = Foo()
                 }
             }
             """,
-            macros: ["SingleEntry": SingleEntryMacro.self]
+            macros: ["SingleEntry": SingleEntry.self]
         )
     }
 }

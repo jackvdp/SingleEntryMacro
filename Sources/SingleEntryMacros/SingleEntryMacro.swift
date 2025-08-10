@@ -4,7 +4,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct SingleEntryMacro: AccessorMacro, PeerMacro {
+public struct SingleEntry: AccessorMacro, PeerMacro {
     
     // This replaces the variable's accessors (removes the initializer, adds get/set)
     public static func expansion(
@@ -52,7 +52,7 @@ public struct SingleEntryMacro: AccessorMacro, PeerMacro {
         
         let environmentKey: DeclSyntax = """
             struct \(raw: keyName): EnvironmentKey {
-                static var defaultValue: \(typeAnnotation)= \(defaultValue)
+                static let defaultValue: \(typeAnnotation)= \(defaultValue)
             }
             """
         
@@ -63,6 +63,6 @@ public struct SingleEntryMacro: AccessorMacro, PeerMacro {
 @main
 struct SingleEntryMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        SingleEntryMacro.self,
+        SingleEntry.self,
     ]
 }

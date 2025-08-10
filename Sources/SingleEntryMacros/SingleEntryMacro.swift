@@ -1,33 +1,68 @@
+// Sources/SingleEntryMacroMacros/SingleEntryMacro.swift
 import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-/// Implementation of the `stringify` macro, which takes an expression
-/// of any type and produces a tuple containing the value of that expression
-/// and the source code that produced the value. For example
-///
-///     #stringify(x + y)
-///
-///  will expand to
-///
-///     (x + y, "x + y")
-public struct StringifyMacro: ExpressionMacro {
+public struct SingleEntryMacro: AccessorMacro, PeerMacro {
+    
+    // This replaces the variable's accessors (removes the initializer, adds get/set)
     public static func expansion(
-        of node: some FreestandingMacroExpansionSyntax,
+        of node: AttributeSyntax,
+        providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
-    ) -> ExprSyntax {
-        guard let argument = node.arguments.first?.expression else {
-            fatalError("compiler bug: the macro does not have any arguments")
+    ) throws -> [AccessorDeclSyntax] {
+        
+        guard let varDecl = declaration.as(VariableDeclSyntax.self),
+              let binding = varDecl.bindings.first,
+              let pattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
+            return []
         }
-
-        return "(\(argument), \(literal: argument.description))"
+        
+        let variableName = pattern.identifier.text
+        let keyName = "\(variableName.capitalized)Key"
+        
+        return [
+            AccessorDeclSyntax(accessorSpecifier: .keyword(.get)) {
+                "self[\(raw: keyName).self]"
+            },
+            AccessorDeclSyntax(accessorSpecifier: .keyword(.set)) {
+                "self[\(raw: keyName).self] = newValue"
+            }
+        ]
+    }
+    
+    // This adds the EnvironmentKey struct as a peer
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        
+        guard let varDecl = declaration.as(VariableDeclSyntax.self),
+              let binding = varDecl.bindings.first,
+              let pattern = binding.pattern.as(IdentifierPatternSyntax.self),
+              let typeAnnotation = binding.typeAnnotation?.type,
+              let defaultValue = binding.initializer?.value else {
+            return []
+        }
+        
+        let variableName = pattern.identifier.text
+        let keyName = "\(variableName.capitalized)Key"
+        
+        let environmentKey: DeclSyntax = """
+            struct \(raw: keyName): EnvironmentKey {
+                static var defaultValue: \(typeAnnotation)= \(defaultValue)
+            }
+            """
+        
+        return [environmentKey]
     }
 }
 
 @main
-struct SingleEntryPlugin: CompilerPlugin {
+struct SingleEntryMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        StringifyMacro.self,
+        SingleEntryMacro.self,
     ]
 }

@@ -1,48 +1,34 @@
-import SwiftSyntax
-import SwiftSyntaxBuilder
+// Tests/SingleEntryMacroTests/SingleEntryMacroTests.swift
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
-
-// Macro implementations build for the host, so the corresponding module is not available when cross-compiling. Cross-compiled tests may still make use of the macro itself in end-to-end tests.
-#if canImport(SingleEntryMacros)
 import SingleEntryMacros
 
-let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
-]
-#endif
-
-final class SingleEntryTests: XCTestCase {
-    func testMacro() throws {
-        #if canImport(SingleEntryMacros)
+final class SingleEntryMacroTests: XCTestCase {
+    func testSingleEntryMacro() {
         assertMacroExpansion(
             """
-            #stringify(a + b)
+            extension EnvironmentValues {
+                @SingleEntry var foo: Foo = Foo()
+            }
             """,
             expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
-        )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
-    }
+            extension EnvironmentValues {
+                var foo: Foo {
+                    get {
+                        self[FooKey.self]
+                    }
+                    set {
+                        self[FooKey.self] = newValue
+                    }
+                }
 
-    func testMacroWithStringLiteral() throws {
-        #if canImport(SingleEntryMacros)
-        assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
-            macros: testMacros
+                struct FooKey: EnvironmentKey {
+                    static var defaultValue: Foo = Foo()
+                }
+            }
+            """,
+            macros: ["SingleEntry": SingleEntryMacro.self]
         )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
     }
 }

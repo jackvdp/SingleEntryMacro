@@ -27,7 +27,7 @@ final class SingleEntryMacroTests: XCTestCase {
                 }
             }
             """,
-            macros: ["SingleEntry": SingleEntryMacros.self]
+            macros: ["SingleEntry": SingleEntryMacro.self]
         )
     }
 }

@@ -114,3 +114,33 @@ extension EnvironmentValues {
 }
 ```
 With `@SingleEntry`, you get exactly **one instance** that's shared across your entire app, which is typically what you want for services, configuration objects, and other shared resources.
+
+## Installation
+
+### Swift Package Manager
+
+#### Option 1: Xcode GUI
+1. Open your project in Xcode
+2. Go to **File** → **Add Package Dependencies...**
+3. Enter the repository URL:
+   ```
+   https://github.com/jackvdp/SingleEntryMacro
+   ```
+4. Choose **"Up to Next Major Version"** and enter `1.0.0`
+5. Click **Add Package**
+6. Select **SingleEntry** and add it to your target
+
+#### Option 2: Package.swift
+Add the following to your `Package.swift` file:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/yourusername/SingleEntry.git", from: "1.0.0")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["SingleEntry"]
+    )
+]
+```
